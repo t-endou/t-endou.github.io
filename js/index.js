@@ -28,6 +28,9 @@ var dotB = dotDefaultB;
 var dotColor = "rgb(" + dotR + "," + dotG + "," + dotB + ")";
 var bgColor = "rgba(255,255,255,0.15)";
 var force = 40;
+var FONT_HEIGHT = 10;
+var FONT_alphabet = ['L', 'I', 'V', 'E'];
+context.font = FONT_HEIGHT + 'px Arial';
 
 movement_init();
 
@@ -80,6 +83,11 @@ function newDots() {
 			vy: Math.random() - 0.5,
 			point: Math.random(),
 			ms: 1 + Math.random() * damp / 4,
+			dotR: Math.floor(dotDefaultR - dotDefaultR / 1.5 * Math.random()),
+			dotG: Math.floor(dotDefaultG - dotDefaultG / 1.5 * Math.random()),
+			dotB: Math.floor(dotDefaultB - dotDefaultB / 1.5 * Math.random()),
+			color: "rgb(" + dotR + "," + dotG + "," + dotB + ")",
+
 			nomal: function nomal() {
 				//0~1の数値を吐き出すので0.5引いて-値と+値を均衡させる。
 				this.vx += Math.random() - 0.5;
@@ -88,6 +96,9 @@ function newDots() {
 				this.y += this.vy;
 				this.vx *= damp * this.ms;
 				this.vy *= damp * this.ms;
+				this.dotR = Math.floor(dotDefaultR - dotDefaultR / this.ms * Math.random());
+				this.dotG = Math.floor(dotDefaultG - dotDefaultG / this.ms * Math.random());
+				this.dotB = Math.floor(dotDefaultB - dotDefaultB / this.ms * Math.random());
 			},
 			vector: function vector() {
 				this.vx += Math.random() - 0.5;
@@ -171,13 +182,17 @@ function newDots() {
 				}
 			},
 			colorChange: function colorChange() {
-				dotR = Math.floor(dotDefaultR - dotDefaultR / 1.5 * Math.random());
-				dotG = Math.floor(dotDefaultG - dotDefaultG / 1.5 * Math.random());
-				dotB = Math.floor(dotDefaultB - dotDefaultB / 1.5 * Math.random());
+				this.dotR = Math.floor(dotDefaultR - dotDefaultR / 1.5 * Math.random());
+				this.dotG = Math.floor(dotDefaultG - dotDefaultG / 1.5 * Math.random());
+				this.dotB = Math.floor(dotDefaultB - dotDefaultB / 1.5 * Math.random());
+				// console.log(this.dotR);
 			},
 			draw: function draw() {
 				//canvas 指定の矩形を塗りつぶす。
+				dotColor = this.color;
+
 				context.fillRect(this.x, this.y, scale, scale);
+				// context.fillText(FONT_alphabet,this.x,this.y)
 			}
 		};
 
@@ -187,22 +202,18 @@ function newDots() {
 
 function movement_loop() {
 
-	// console.log(dotColor);
-	if (wall == 'circle') {
-		drawSquare();
-		// drawCircle();
-	} else {
-			drawSquare();
-		}
+	drawSquare();
 	context.fillStyle = dotColor;
 	for (var i = 0; i < dots_length; i++) {
-		dotColor = "rgb(" + dotR + "," + dotG + "," + dotB + ")";
+		// dots[i].colorChange();
+
 		if (mode == 0) dots[i].nomal();
 		if (mode == 1) dots[i].vector();
 		if (wall == 'none') dots[i].noWall();
 		if (wall == 'nomal') dots[i].wall();
 		if (wall == 'circle') dots[i].wallCircleCatch();
 		// dots[i].colorChange();
+
 		dots[i].draw();
 	}
 }
